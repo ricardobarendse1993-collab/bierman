@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dimitri's Bierrace 🍺</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap');
+
+  :root {
+    --gold: #FFD700;
+    --beer: #F5A623;
+    --dark: #1a0a00;
+    --green: #00ff88;
+    --red: #ff3333;
+    --blue: #3399ff;
+    --purple: #9b59b6;
+    --orange: #e67e22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0d0d0d;
+    font-family: 'Nunito', sans-serif;
+    color: white;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; }
+  .screen.active { display: flex; }
+
+  /* ===== LOGIN SCREEN ===== */
+  #loginScreen {
+    background: radial-gradient(ellipse at center, #2c1a00 0%, #0d0500 70%);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .login-box {
+    background: rgba(255,215,0,0.07);
+    border: 2px solid var(--gold);
+    border-radius: 20px;
+    padding: 40px 50px;
+    width: 380px;
+    max-width: 95vw;
+    box-shadow: 0 0 60px rgba(255,215,0,0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .login-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(255,215,0,0.5);
+    letter-spacing: 3px;
+    text-align: center;
+    line-height: 1;
+  }
+
+  .login-subtitle {
+    font-family: 'Fredoka One', cursive;
+    color: var(--beer);
+    font-size: 1.1rem;
+    text-align: center;
+    margin-top: -10px;
+  }
+
+  .beer-emoji { font-size: 2.5rem; animation: sway 2s ease-in-out infinite; display: inline-block; }
+  @keyframes sway { 0%,100%{transform:rotate(-10deg)} 50%{transform:rotate(10deg)} }
+
+  .login-tabs { display: flex; gap: 8px; width: 100%; }
+  .tab-btn {
+    flex: 1; padding: 10px; border: 2px solid var(--gold); background: transparent;
+    color: var(--gold); font-family: 'Fredoka One', cursive; font-size: 1rem;
+    border-radius: 10px; cursor: pointer; transition: all 0.2s;
+  }
+  .tab-btn.active { background: var(--gold); color: var(--dark); }
+
+  .login-input {
+    width: 100%; padding: 12px 16px; border: 2px solid #555; border-radius: 10px;
+    background: rgba(255,255,255,0.08); color: white; font-family: 'Nunito', sans-serif;
+    font-size: 1rem; outline: none; transition: border-color 0.2s;
+  }
+  .login-input:focus { border-color: var(--gold); }
+  .login-input::placeholder { color: #888; }
+
+  .login-btn {
+    width: 100%; padding: 14px; border: none; border-radius: 12px;
+    background: linear-gradient(135deg, var(--gold), var(--beer));
+    color: var(--dark); font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem;
+    letter-spacing: 2px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 20px rgba(255,215,0,0.3);
+  }
+  .login-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(255,215,0,0.5); }
+
+  .login-msg { font-size: 0.9rem; text-align: center; min-height: 20px; }
+  .login-msg.error { color: var(--red); }
+  .login-msg.success { color: var(--green); }
+
+  /* ===== MENU SCREEN ===== */
+  #menuScreen {
+    background: radial-gradient(ellipse at center, #2c1a00 0%, #0d0500 70%);
+    flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+  }
+
+  .menu-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 5rem; color: var(--gold);
+    text-shadow: 0 0 30px rgba(255,215,0,0.6), 0 0 60px rgba(255,165,0,0.3);
+    letter-spacing: 5px; text-align: center; line-height: 1;
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  @keyframes pulse-glow {
+    0%,100% { text-shadow: 0 0 30px rgba(255,215,0,0.6); }
+    50% { text-shadow: 0 0 60px rgba(255,215,0,1), 0 0 100px rgba(255,165,0,0.5); }
+  }
+
+  .menu-btn {
+    padding: 16px 50px; border: none; border-radius: 14px; font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem; letter-spacing: 3px; cursor: pointer; transition: all 0.2s;
+    min-width: 260px; text-align: center;
+  }
+  .menu-btn.primary { background: linear-gradient(135deg, var(--gold), var(--beer)); color: var(--dark); box-shadow: 0 4px 20px rgba(255,215,0,0.3); }
+  .menu-btn.secondary { background: transparent; border: 2px solid var(--gold); color: var(--gold); }
+  .menu-btn:hover { transform: scale(1.05); }
+
+  .welcome-user { font-family: 'Fredoka One', cursive; color: var(--beer); font-size: 1.2rem; }
+
+  /* ===== SCOREBOARD SCREEN ===== */
+  #scoreScreen {
+    background: radial-gradient(ellipse at center, #1a0020 0%, #0d0005 70%);
+    flex-direction: column; align-items: center; gap: 20px; padding: 30px; overflow-y: auto;
+  }
+
+  .score-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem; color: var(--purple);
+    text-shadow: 0 0 30px rgba(155,89,182,0.6); letter-spacing: 4px;
+  }
+
+  .score-table { width: 100%; max-width: 600px; border-collapse: collapse; }
+  .score-table th { background: rgba(155,89,182,0.3); color: var(--purple); font-family: 'Fredoka One', cursive; padding: 12px; text-align: left; }
+  .score-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.95rem; }
+  .score-table tr:nth-child(even) td { background: rgba(255,255,255,0.03); }
+  .score-table .rank-1 td { color: var(--gold); font-weight: 900; }
+  .score-table .rank-2 td { color: #C0C0C0; }
+  .score-table .rank-3 td { color: #CD7F32; }
+
+  /* ===== GAME SCREEN ===== */
+  #gameScreen {
+    flex-direction: column; align-items: center; background: #0d0d0d;
+  }
+
+  #topBar {
+    width: 100%; background: rgba(0,0,0,0.8); border-bottom: 2px solid #333;
+    padding: 8px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    z-index: 10; flex-shrink: 0;
+  }
+
+  .hud-item { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+  .hud-label { font-size: 0.65rem; color: #888; font-family: 'Fredoka One', cursive; letter-spacing: 1px; text-transform: uppercase; }
+  .hud-value { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: white; letter-spacing: 1px; }
+
+  /* Drunk bar */
+  #drunkBar {
+    flex: 1; min-width: 150px;
+  }
+  .drunk-bar-track {
+    height: 20px; background: rgba(255,255,255,0.1); border-radius: 10px;
+    border: 2px solid #555; overflow: hidden; position: relative;
+  }
+  .drunk-bar-fill {
+    height: 100%; border-radius: 8px; transition: width 0.3s, background 0.5s;
+    background: linear-gradient(90deg, #00cc44, #ffcc00, #ff6600, #cc0000);
+  }
+  .drunk-bar-puke {
+    position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+    font-size: 0.8rem; padding-right: 4px;
+  }
+  .drunk-bar-label { font-size: 0.65rem; color: #888; font-family: 'Fredoka One', cursive; letter-spacing: 1px; margin-bottom: 2px; }
+
+  /* Lives (ID docs) */
+  #livesDisplay { display: flex; gap: 6px; align-items: center; }
+  .id-doc {
+    width: 36px; height: 24px; border-radius: 4px; border: 2px solid;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; font-weight: 900; letter-spacing: 0px; text-align: center;
+    line-height: 1.1; transition: opacity 0.3s;
+  }
+  .id-passport { border-color: #cc4400; background: rgba(204,68,0,0.2); color: #ff7733; }
+  .id-rijbewijs { border-color: #4499cc; background: rgba(68,153,204,0.2); color: #66bbff; }
+  .id-idkaart { border-color: #44cc66; background: rgba(68,204,102,0.2); color: #66ff99; }
+  .id-doc.lost { opacity: 0.2; filter: grayscale(1); }
+
+  /* Canvas */
+  #gameCanvas {
+    border: 2px solid #333;
+    background: #000;
+    display: block;
+    flex: 1;
+    max-width: 100%;
+  }
+
+  /* Overlay messages */
+  #gameOverlay {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.85);
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    gap: 20px; z-index: 100;
+  }
+  #gameOverlay.active { display: flex; }
+  .overlay-title { font-family: 'Bebas Neue', sans-serif; font-size: 4rem; letter-spacing: 4px; text-align: center; }
+  .overlay-sub { font-family: 'Fredoka One', cursive; font-size: 1.3rem; color: #ccc; text-align: center; }
+  .overlay-btn {
+    padding: 14px 40px; border: none; border-radius: 12px; cursor: pointer;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 2px;
+    background: linear-gradient(135deg, var(--gold), var(--beer)); color: var(--dark);
+    transition: transform 0.2s;
+  }
+  .overlay-btn:hover { transform: scale(1.05); }
+
+  /* Mobile controls */
+  #mobileControls {
+    display: none; position: fixed; bottom: 20px; right: 20px;
+    z-index: 200; gap: 4px; flex-direction: column; align-items: center;
+  }
+  .dpad { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; }
+  .dpad-btn {
+    width: 50px; height: 50px; background: rgba(255,215,0,0.2); border: 2px solid var(--gold);
+    border-radius: 10px; color: var(--gold); font-size: 1.4rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; user-select: none;
+    -webkit-user-select: none; touch-action: none;
+  }
+  .dpad-btn:active { background: rgba(255,215,0,0.5); }
+  .dpad-empty { width: 50px; height: 50px; }
+
+  @media (max-width: 600px) {
+    #mobileControls { display: flex; }
+    .menu-title { font-size: 3rem; }
+  }
+
+  /* Notification toast */
+  #toast {
+    position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    background: rgba(0,0,0,0.9); border: 2px solid var(--gold); border-radius: 12px;
+    padding: 10px 24px; font-family: 'Fredoka One', cursive; font-size: 1.1rem;
+    color: var(--gold); opacity: 0; transition: all 0.3s; z-index: 999; white-space: nowrap;
+    pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="screen active">
+  <div class="login-box">
+    <div class="beer-emoji">🍺</div>
+    <div class="login-title">DIMITRI'S<br>BIERRACE</div>
+    <div class="login-subtitle">Pac-Man met promillage</div>
+    <div class="login-tabs">
+      <button class="tab-btn active" onclick="switchTab('login')">Inloggen</button>
+      <button class="tab-btn" onclick="switchTab('register')">Registreren</button>
+    </div>
+    <input class="login-input" id="usernameInput" type="text" placeholder="Gebruikersnaam" maxlength="20" autocomplete="off">
+    <input class="login-input" id="passwordInput" type="password" placeholder="Wachtwoord" autocomplete="off">
+    <input class="login-input" id="confirmInput" type="password" placeholder="Bevestig wachtwoord" style="display:none" autocomplete="off">
+    <div class="login-msg" id="loginMsg"></div>
+    <button class="login-btn" id="loginActionBtn" onclick="doLogin()">SPEEL!</button>
+  </div>
+</div>
+
+<!-- MENU SCREEN -->
+<div id="menuScreen" class="screen">
+  <div class="welcome-user" id="welcomeUser"></div>
+  <div class="menu-title">🍺 DIMITRI'S<br>BIERRACE</div>
+  <button class="menu-btn primary" onclick="startGame(1)">SPELEN (Level 1)</button>
+  <button class="menu-btn secondary" onclick="showScreen('scoreScreen')">🏆 SCOREBORD</button>
+  <button class="menu-btn secondary" onclick="doLogout()">🚪 UITLOGGEN</button>
+</div>
+
+<!-- SCORE SCREEN -->
+<div id="scoreScreen" class="screen">
+  <div class="score-title">🏆 SCOREBORD</div>
+  <table class="score-table" id="scoreTable">
+    <thead><tr><th>#</th><th>Speler</th><th>Score</th><th>Level</th><th>Biertjes</th></tr></thead>
+    <tbody id="scoreBody"></tbody>
+  </table>
+  <button class="menu-btn secondary" style="margin-top:20px" onclick="showScreen('menuScreen')">← Terug</button>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="gameScreen" class="screen" style="position:relative;">
+
+  <div id="topBar">
+    <div class="hud-item">
+      <div class="hud-label">Score</div>
+      <div class="hud-value" id="hudScore">0</div>
+    </div>
+    <div class="hud-item">
+      <div class="hud-label">Level</div>
+      <div class="hud-value" id="hudLevel">1</div>
+    </div>
+    <div class="hud-item">
+      <div class="hud-label">Biertjes</div>
+      <div class="hud-value" id="hudBeers">0</div>
+    </div>
+    <div id="drunkBar">
+      <div class="drunk-bar-label">Dronkenheid <span id="drunkPct">0%</span> — kotst bij 100%</div>
+      <div class="drunk-bar-track">
+        <div class="drunk-bar-fill" id="drunkFill" style="width:0%"></div>
+      </div>
+    </div>
+    <div id="livesDisplay">
+      <div class="hud-label" style="font-size:0.65rem;color:#888;margin-right:4px;">ID's</div>
+      <div class="id-doc id-passport" id="doc0">PAS<br>POORT</div>
+      <div class="id-doc id-rijbewijs" id="doc1">RIJE<br>WIJS</div>
+      <div class="id-doc id-idkaart" id="doc2">ID<br>KAART</div>
+    </div>
+    <button onclick="endGame()" style="background:transparent;border:1px solid #555;color:#888;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:0.8rem;">← Menu</button>
+  </div>
+
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- Game overlay -->
+  <div id="gameOverlay">
+    <div class="overlay-title" id="overlayTitle">GAME OVER</div>
+    <div class="overlay-sub" id="overlaySub"></div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">
+      <button class="overlay-btn" id="overlayBtn1" onclick="startGame(currentLevel)">Opnieuw</button>
+      <button class="overlay-btn" style="background:transparent;border:2px solid var(--gold);color:var(--gold);" onclick="endGame()">Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE DPAD -->
+<div id="mobileControls">
+  <div class="dpad">
+    <div class="dpad-empty"></div>
+    <div class="dpad-btn" ontouchstart="setDir(0,-1)">▲</div>
+    <div class="dpad-empty"></div>
+    <div class="dpad-btn" ontouchstart="setDir(-1,0)">◀</div>
+    <div class="dpad-empty"></div>
+    <div class="dpad-btn" ontouchstart="setDir(1,0)">▶</div>
+    <div class="dpad-empty"></div>
+    <div class="dpad-btn" ontouchstart="setDir(0,1)">▼</div>
+    <div class="dpad-empty"></div>
+  </div>
+</div>
+
+<script>
+// ===== USER STORAGE =====
+function getUsers() { try { return JSON.parse(localStorage.getItem('bierrace_users')||'{}'); } catch(e){ return {}; } }
+function saveUsers(u) { localStorage.setItem('bierrace_users', JSON.stringify(u)); }
+function getScores() { try { return JSON.parse(localStorage.getItem('bierrace_scores')||'[]'); } catch(e){ return []; } }
+function saveScore(entry) {
+  let scores = getScores();
+  scores.push(entry);
+  scores.sort((a,b) => b.score - a.score);
+  scores = scores.slice(0, 50);
+  localStorage.setItem('bierrace_scores', JSON.stringify(scores));
+}
+
+let currentUser = null;
+let currentTab = 'login';
+let currentLevel = 1;
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('confirmInput').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('loginActionBtn').textContent = tab === 'login' ? 'SPEEL!' : 'REGISTREER';
+  document.getElementById('loginMsg').textContent = '';
+}
+
+function doLogin() {
+  const u = document.getElementById('usernameInput').value.trim();
+  const p = document.getElementById('passwordInput').value;
+  const c = document.getElementById('confirmInput').value;
+  const msg = document.getElementById('loginMsg');
+  if (!u || !p) { msg.className='login-msg error'; msg.textContent='Vul alles in!'; return; }
+  const users = getUsers();
+  if (currentTab === 'register') {
+    if (p !== c) { msg.className='login-msg error'; msg.textContent='Wachtwoorden komen niet overeen!'; return; }
+    if (p.length < 4) { msg.className='login-msg error'; msg.textContent='Wachtwoord minimaal 4 tekens!'; return; }
+    if (users[u]) { msg.className='login-msg error'; msg.textContent='Gebruikersnaam al bezet!'; return; }
+    users[u] = { password: btoa(p) };
+    saveUsers(users);
+    msg.className='login-msg success'; msg.textContent='Account aangemaakt! Je kunt nu inloggen.';
+    switchTab('login');
+    return;
+  }
+  if (!users[u] || users[u].password !== btoa(p)) {
+    msg.className='login-msg error'; msg.textContent='Onjuiste gebruikersnaam of wachtwoord!'; return;
+  }
+  currentUser = u;
+  document.getElementById('welcomeUser').textContent = `Welkom, ${u}! 🍺`;
+  showScreen('menuScreen');
+}
+
+function doLogout() { currentUser = null; showScreen('loginScreen'); }
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 'scoreScreen') renderScoreBoard();
+}
+
+document.getElementById('passwordInput').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('usernameInput').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('passwordInput').focus(); });
+
+function renderScoreBoard() {
+  const scores = getScores();
+  const tbody = document.getElementById('scoreBody');
+  tbody.innerHTML = '';
+  if (!scores.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#555;padding:20px">Nog geen scores!</td></tr>'; return; }
+  scores.forEach((s,i) => {
+    const tr = document.createElement('tr');
+    tr.className = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'';
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1;
+    tr.innerHTML = `<td>${medal}</td><td>${s.user}</td><td>${s.score}</td><td>${s.level}</td><td>🍺${s.beers}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function showToast(msg, duration=2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ===== GAME ENGINE =====
+const CELL = 20;
+let canvas, ctx;
+let gameLoop = null;
+let G = {}; // game state
+
+// Maze template (0=wall, 1=dot, 2=empty, 3=beer, 4=ijsfontein)
+// 21 cols x 21 rows
+const MAZE_TEMPLATE = [
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0],
+  [0,1,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1,0],
+  [0,1,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1,0],
+  [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+  [0,1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,0,1,0],
+  [0,1,1,1,1,0,1,1,1,0,0,0,1,1,1,0,1,1,1,1,0],
+  [0,0,0,0,1,0,0,0,2,0,0,0,2,0,0,0,1,0,0,0,0],
+  [0,0,0,0,1,0,2,2,2,2,2,2,2,2,2,0,1,0,0,0,0],
+  [0,0,0,0,1,0,2,0,0,2,2,2,0,0,2,0,1,0,0,0,0],
+  [2,2,2,2,1,2,2,0,2,2,2,2,2,0,2,2,1,2,2,2,2],
+  [0,0,0,0,1,0,2,0,0,0,0,0,0,0,2,0,1,0,0,0,0],
+  [0,0,0,0,1,0,2,2,2,2,2,2,2,2,2,0,1,0,0,0,0],
+  [0,0,0,0,1,0,2,0,0,0,0,0,0,0,2,0,1,0,0,0,0],
+  [0,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,0],
+  [0,1,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1,0],
+  [0,1,1,0,1,1,1,1,1,1,2,1,1,1,1,1,1,0,1,1,0],
+  [0,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,0],
+  [0,1,1,1,1,0,1,1,1,0,0,0,1,1,1,0,1,1,1,1,0],
+  [0,1,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0],
+  [0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+];
+
+const COLS = MAZE_TEMPLATE[0].length;
+const ROWS = MAZE_TEMPLATE.length;
+
+// Place beers and ijsfontein in maze
+function buildMaze(level) {
+  let maze = MAZE_TEMPLATE.map(r => [...r]);
+  // Place 3 beers
+  const beerPositions = [[1,1],[19,1],[1,19],[19,19]];
+  beerPositions.forEach(([x,y]) => { if(maze[y][x]===1) maze[y][x]=3; });
+  // Place ijsfontein
+  maze[10][0]=4; maze[10][20]=4;
+  return maze;
+}
+
+function isWalkable(maze, x, y) {
+  if (x<0||y<0||x>=COLS||y>=ROWS) return x>=0&&y>=0&&x<COLS&&y<ROWS; // tunnel
+  return maze[y][x] !== 0;
+}
+
+// Security guard drawing
+function drawSecurity(ctx, px, py, size, scared=false, extra=false) {
+  const s = size * 0.9;
+  const cx = px + size/2, cy = py + size/2;
+  // Body
+  ctx.fillStyle = scared ? '#555' : (extra ? '#8B0000' : '#1a1a2e');
+  ctx.beginPath();
+  ctx.ellipse(cx, cy+s*0.15, s*0.3, s*0.38, 0, 0, Math.PI*2);
+  ctx.fill();
+  // Head
+  ctx.fillStyle = scared ? '#888' : '#f5c6a0';
+  ctx.beginPath();
+  ctx.arc(cx, cy-s*0.22, s*0.22, 0, Math.PI*2);
+  ctx.fill();
+  // Cap
+  ctx.fillStyle = scared ? '#444' : '#1a1a2e';
+  ctx.fillRect(cx-s*0.22, cy-s*0.44, s*0.44, s*0.1);
+  ctx.fillRect(cx-s*0.16, cy-s*0.54, s*0.32, s*0.12);
+  // Eyes
+  if (!scared) {
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(cx-s*0.08, cy-s*0.22, s*0.06, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx+s*0.08, cy-s*0.22, s*0.06, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#222';
+    ctx.beginPath(); ctx.arc(cx-s*0.07, cy-s*0.22, s*0.03, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx+s*0.07, cy-s*0.22, s*0.03, 0, Math.PI*2); ctx.fill();
+  } else {
+    ctx.strokeStyle = '#ff4444'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(cx-s*0.12, cy-s*0.26); ctx.lineTo(cx-s*0.04, cy-s*0.18); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx+s*0.12, cy-s*0.26); ctx.lineTo(cx+s*0.04, cy-s*0.18); ctx.stroke();
+  }
+  // V badge on sleeve
+  ctx.fillStyle = '#FFD700';
+  ctx.font = `bold ${Math.floor(s*0.22)}px Arial`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('V', cx, cy+s*0.05);
+  // Arms
+  ctx.strokeStyle = scared ? '#555' : '#1a1a2e'; ctx.lineWidth = Math.max(2, s*0.09);
+  ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(cx-s*0.28, cy); ctx.lineTo(cx-s*0.42, cy+s*0.2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx+s*0.28, cy); ctx.lineTo(cx+s*0.42, cy+s*0.2); ctx.stroke();
+  // Extra marking
+  if (extra) {
+    ctx.fillStyle = '#ff4444';
+    ctx.font = `bold ${Math.floor(s*0.15)}px Arial`;
+    ctx.fillText('!', cx, cy-s*0.5);
+  }
+}
+
+// Dimitri face drawing — gebaseerd op echte foto's
+// Kort blond haar, ronde kaaklijn, blauwe ogen, brede glimlach
+function drawDimitri(ctx, px, py, size, dir, drunkLevel, mouthOpen) {
+  const cx = px + size/2, cy = py + size/2;
+  const r = size * 0.46;
+
+  ctx.save();
+
+  // Rotate context based on direction for pac-man effect
+  let rotation = 0;
+  if (dir[0] === 1)       rotation = 0;
+  else if (dir[0] === -1) rotation = Math.PI;
+  else if (dir[1] === -1) rotation = -Math.PI/2;
+  else if (dir[1] === 1)  rotation = Math.PI/2;
+
+  ctx.translate(cx, cy);
+  ctx.rotate(rotation);
+
+  const drunk = drunkLevel; // 0, 1, 2
+  // Skin tone — gets redder / blotchier with drunk
+  const skinR = Math.min(240, 210 + drunk * 20);
+  const skinG = Math.max(130, 175 - drunk * 22);
+  const skinB = Math.max(80, 145 - drunk * 30);
+
+  // === NECK ===
+  ctx.fillStyle = `rgb(${skinR},${skinG},${skinB})`;
+  ctx.beginPath();
+  ctx.ellipse(0, r*0.72, r*0.28, r*0.22, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // === HEAD (slightly wide, round — Dimitri's characteristic shape) ===
+  const mouthAngle = mouthOpen ? 0.32 : 0.04;
+  // Pac-man mouth cutout
+  ctx.fillStyle = `rgb(${skinR},${skinG},${skinB})`;
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.arc(0, 0, r, mouthAngle * Math.PI, (2 - mouthAngle) * Math.PI);
+  ctx.closePath();
+  ctx.fill();
+
+  // Jaw / chin — slightly square
+  ctx.fillStyle = `rgb(${skinR},${skinG},${skinB})`;
+  ctx.beginPath();
+  ctx.ellipse(0, r*0.55, r*0.72, r*0.32, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // === EAR LEFT ===
+  ctx.fillStyle = `rgb(${Math.min(255,skinR-10)},${Math.max(0,skinG-10)},${Math.max(0,skinB-10)})`;
+  ctx.beginPath();
+  ctx.ellipse(-r*0.88, r*0.05, r*0.13, r*0.18, -0.2, 0, Math.PI*2);
+  ctx.fill();
+  // inner ear
+  ctx.fillStyle = `rgba(180,100,80,0.4)`;
+  ctx.beginPath();
+  ctx.ellipse(-r*0.88, r*0.05, r*0.07, r*0.1, -0.2, 0, Math.PI*2);
+  ctx.fill();
+
+  // === HAIR (short, blonde, slightly darker at roots — like in photos) ===
+  // Base hair cap
+  const hairGrad = ctx.createRadialGradient(0, -r*0.55, r*0.1, 0, -r*0.4, r*0.95);
+  hairGrad.addColorStop(0, '#c9a84c');
+  hairGrad.addColorStop(0.4, '#b8902a');
+  hairGrad.addColorStop(1, '#8a6520');
+  ctx.fillStyle = hairGrad;
+  ctx.beginPath();
+  ctx.ellipse(0, -r*0.38, r*0.82, r*0.62, 0, Math.PI, Math.PI*2);
+  ctx.fill();
+
+  // Hair texture — short strands on top (characteristic spiky-ish short hair)
+  ctx.strokeStyle = '#c9a84c';
+  ctx.lineWidth = r * 0.06;
+  ctx.lineCap = 'round';
+  const hairStrands = [
+    [-r*0.3, -r*0.88, -r*0.28, -r*1.0],
+    [-r*0.1, -r*0.92, -r*0.08, -r*1.05],
+    [r*0.1, -r*0.9, r*0.12, -r*1.03],
+    [r*0.3, -r*0.85, r*0.32, -r*0.97],
+    [-r*0.5, -r*0.75, -r*0.52, -r*0.86],
+    [r*0.5, -r*0.73, r*0.54, -r*0.84],
+  ];
+  hairStrands.forEach(([x1,y1,x2,y2]) => {
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  });
+
+  // Slight hairline detail
+  ctx.strokeStyle = 'rgba(100,70,20,0.35)';
+  ctx.lineWidth = r*0.04;
+  ctx.beginPath();
+  ctx.arc(0, -r*0.35, r*0.78, Math.PI*1.1, Math.PI*1.9);
+  ctx.stroke();
+
+  // === EYEBROWS (slightly thick, characteristic) ===
+  const browY = -r * 0.25;
+  const browAlpha = drunk >= 2 ? 0.5 : 1.0; // droopy when very drunk
+  ctx.strokeStyle = `rgba(140,95,20,${browAlpha})`;
+  ctx.lineWidth = r * 0.09;
+  ctx.lineCap = 'round';
+  // Left brow — slight furrow when drunk
+  ctx.beginPath();
+  ctx.moveTo(-r*0.55, browY + (drunk>=2 ? r*0.05 : 0));
+  ctx.quadraticCurveTo(-r*0.35, browY - r*0.06, -r*0.18, browY + (drunk>=2 ? r*0.03 : 0));
+  ctx.stroke();
+  // Right brow
+  ctx.beginPath();
+  ctx.moveTo(r*0.18, browY + (drunk>=2 ? r*0.03 : 0));
+  ctx.quadraticCurveTo(r*0.35, browY - r*0.06, r*0.55, browY + (drunk>=2 ? r*0.05 : 0));
+  ctx.stroke();
+
+  // === EYES (blue — characteristic) ===
+  const eyeY = -r * 0.1;
+  // Eye whites
+  ctx.fillStyle = '#f5f5f5';
+  ctx.beginPath(); ctx.ellipse(-r*0.32, eyeY, r*0.18, r*0.13, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.32, eyeY, r*0.18, r*0.13, 0, 0, Math.PI*2); ctx.fill();
+
+  // Iris — blue/grey-blue like in photos
+  const irisColor = drunk >= 1 ? '#6a8faa' : '#4a7fa5';
+  ctx.fillStyle = irisColor;
+  // Slightly squinting when drunk
+  const eyeH = drunk >= 2 ? r*0.08 : (drunk === 1 ? r*0.10 : r*0.11);
+  ctx.beginPath(); ctx.ellipse(-r*0.32, eyeY, r*0.11, eyeH, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.32, eyeY, r*0.11, eyeH, 0, 0, Math.PI*2); ctx.fill();
+  // Pupils
+  ctx.fillStyle = '#111';
+  ctx.beginPath(); ctx.arc(-r*0.32, eyeY, r*0.065, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(r*0.32, eyeY, r*0.065, 0, Math.PI*2); ctx.fill();
+  // Eye shine
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.beginPath(); ctx.arc(-r*0.28, eyeY-r*0.04, r*0.03, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(r*0.36, eyeY-r*0.04, r*0.03, 0, Math.PI*2); ctx.fill();
+
+  // Drunk eyelid droop
+  if (drunk >= 1) {
+    ctx.fillStyle = `rgb(${skinR},${skinG},${skinB})`;
+    const droopAmt = drunk === 2 ? r*0.09 : r*0.05;
+    ctx.beginPath(); ctx.ellipse(-r*0.32, eyeY - eyeH*0.3, r*0.18, droopAmt, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(r*0.32, eyeY - eyeH*0.3, r*0.18, droopAmt, 0, 0, Math.PI*2); ctx.fill();
+  }
+
+  // === NOSE (small, central) ===
+  ctx.fillStyle = `rgba(${skinR-30},${skinG-25},${skinB-20},0.6)`;
+  ctx.beginPath();
+  ctx.ellipse(-r*0.1, r*0.12, r*0.07, r*0.05, -0.3, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(r*0.1, r*0.12, r*0.07, r*0.05, 0.3, 0, Math.PI*2); ctx.fill();
+  // nose bridge
+  ctx.strokeStyle = `rgba(${skinR-40},${skinG-30},${skinB-25},0.4)`;
+  ctx.lineWidth = r*0.04;
+  ctx.beginPath(); ctx.moveTo(0, -r*0.05); ctx.lineTo(0, r*0.08); ctx.stroke();
+
+  // === MOUTH / SMILE ===
+  // The pac-man cutout is black; add teeth and smile details on visible side
+  // Teeth flash (visible inside the mouth arc)
+  if (mouthOpen) {
+    ctx.fillStyle = 'white';
+    ctx.beginPath();
+    ctx.moveTo(r*0.02, r*0.02);
+    ctx.arc(0, 0, r*0.72, mouthAngle*Math.PI*0.7, (2-mouthAngle)*Math.PI*0.7);
+    ctx.closePath();
+    // clip to head circle
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out'; // won't work in isolation; just draw white
+    ctx.restore();
+    // Simple white teeth strip
+    ctx.fillStyle = '#eee';
+    ctx.beginPath();
+    ctx.arc(0, 0, r*0.55, mouthAngle*Math.PI*1.1, (mouthAngle+0.25)*Math.PI);
+    ctx.arc(0, 0, r*0.3, (mouthAngle+0.25)*Math.PI, mouthAngle*Math.PI*1.1, true);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // Smile lines at corners of mouth (Dimitri's characteristic smirk)
+  if (!mouthOpen) {
+    ctx.strokeStyle = `rgba(${skinR-40},${skinG-30},${skinB-20},0.6)`;
+    ctx.lineWidth = r*0.04;
+    ctx.beginPath();
+    ctx.arc(0, r*0.28, r*0.42, Math.PI*1.1, Math.PI*1.9);
+    ctx.stroke();
+    // Dimples
+    ctx.fillStyle = `rgba(${skinR-30},${skinG-25},${skinB-20},0.5)`;
+    ctx.beginPath(); ctx.arc(-r*0.42, r*0.32, r*0.05, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(r*0.42, r*0.32, r*0.05, 0, Math.PI*2); ctx.fill();
+  }
+
+  // === DRUNK EFFECTS ===
+  if (drunk >= 1) {
+    // Rosy red cheeks (like in the Heineken photo — sunburned look)
+    ctx.fillStyle = `rgba(220,60,60,${drunk===1?0.25:0.4})`;
+    ctx.beginPath(); ctx.ellipse(-r*0.5, r*0.15, r*0.24, r*0.18, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(r*0.5, r*0.15, r*0.24, r*0.18, 0, 0, Math.PI*2); ctx.fill();
+  }
+
+  if (drunk >= 2) {
+    // Sweat drops
+    ctx.fillStyle = 'rgba(150,200,255,0.7)';
+    ctx.beginPath(); ctx.arc(-r*0.62, -r*0.3, r*0.05, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(r*0.58, -r*0.25, r*0.04, 0, Math.PI*2); ctx.fill();
+    // Wavy drunk lines on forehead
+    ctx.strokeStyle = 'rgba(200,80,80,0.6)'; ctx.lineWidth = r*0.04;
+    ctx.beginPath();
+    ctx.moveTo(-r*0.35, -r*0.5);
+    ctx.quadraticCurveTo(-r*0.15, -r*0.56, 0, -r*0.5);
+    ctx.quadraticCurveTo(r*0.15, -r*0.44, r*0.35, -r*0.5);
+    ctx.stroke();
+    // Stars spinning when very drunk
+    const t = Date.now()/600;
+    for(let i=0;i<3;i++){
+      const angle = t + i*(Math.PI*2/3);
+      const sx = Math.cos(angle)*r*1.1, sy = Math.sin(angle)*r*1.1 - r*0.1;
+      ctx.font = `${Math.floor(r*0.28)}px Arial`;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('⭐', sx, sy);
+    }
+  }
+
+  ctx.restore();
+}
+
+// Beer sprite
+function drawBeer(ctx, px, py, size) {
+  const cx=px+size/2, cy=py+size/2, r=size*0.3;
+  ctx.fillStyle='#F5A623';
+  ctx.beginPath(); ctx.roundRect(cx-r*0.6, cy-r*1.1, r*1.2, r*2, r*0.2); ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.8)';
+  ctx.beginPath(); ctx.roundRect(cx-r*0.6, cy-r*1.1, r*1.2, r*0.6, [r*0.2,r*0.2,0,0]); ctx.fill();
+  ctx.fillStyle='rgba(255,220,100,0.5)';
+  ctx.fillRect(cx-r*0.2, cy-r*0.4, r*0.2, r*0.9);
+}
+
+// Ijsfontein sprite
+function drawIjsfontein(ctx, px, py, size) {
+  const cx=px+size/2, cy=py+size/2;
+  // Sparkle rays
+  const colors=['#ff4','#f80','#f40','#fff','#ff4'];
+  for(let i=0;i<8;i++){
+    const angle=(i/8)*Math.PI*2;
+    const t=Date.now()/300;
+    const len=size*0.35*(0.7+0.3*Math.sin(t+i));
+    ctx.strokeStyle=colors[i%colors.length]; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+Math.cos(angle)*len, cy+Math.sin(angle)*len); ctx.stroke();
+  }
+  ctx.fillStyle='#fff';
+  ctx.beginPath(); ctx.arc(cx,cy,size*0.12,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#FFD700';
+  ctx.beginPath(); ctx.arc(cx,cy,size*0.07,0,Math.PI*2); ctx.fill();
+  // Label
+  ctx.fillStyle='#fff'; ctx.font=`bold ${Math.floor(size*0.18)}px Arial`;
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('🎆',cx,cy+size*0.36);
+}
+
+function startGame(level) {
+  currentLevel = level;
+  showScreen('gameScreen');
+  initGame(level);
+}
+
+function initGame(level) {
+  canvas = document.getElementById('gameCanvas');
+  // Size canvas
+  const bar = document.getElementById('topBar');
+  const barH = bar.offsetHeight;
+  const W = Math.min(window.innerWidth, COLS * CELL * 2.5);
+  const H = window.innerHeight - barH;
+  const cellW = Math.floor(W / COLS);
+  const cellH = Math.floor(H / ROWS);
+  const cell = Math.min(cellW, cellH, 28);
+  canvas.width = COLS * cell;
+  canvas.height = ROWS * cell;
+  ctx = canvas.getContext('2d');
+
+  const maze = buildMaze(level);
+
+  // Count total dots + beers
+  let totalPellets = 0;
+  for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++) if(maze[y][x]===1||maze[y][x]===3) totalPellets++;
+
+  G = {
+    cell,
+    level,
+    maze,
+    totalPellets,
+    score: 0,
+    beersEaten: 0,
+    lives: 3,
+    drunkness: 0, // 0-100
+    drunkPhase: 0, // 0=normal, 1=slow, 2=inverted
+    puking: false,
+    pukeTimer: 0,
+    // Player
+    player: {
+      x: 10 * cell, y: 16 * cell, // pixel position
+      dir: [1,0], nextDir: [1,0],
+      speed: getBaseSpeed(level),
+      mouthOpen: true, mouthTimer: 0,
+      moving: false,
+      dead: false, deathTimer: 0,
+    },
+    // Securities
+    securities: [],
+    extraSecurity: null,
+    extraSecTimer: 0,
+    extraSecBaseDuration: 15, // seconds, increases per level
+    // Ijsfontein state
+    ijsfonteinActive: false,
+    ijsfonteinTimer: 0,
+    // Game state
+    paused: false,
+    gameOver: false,
+    won: false,
+    lastTime: null,
+    // Flash on hit
+    flashTimer: 0,
+    // Pellet anim
+    pelletAnim: 0,
+    // Vomit overlay
+    vomitTimer: 0,
+    // Input direction queue
+    dirInput: [1,0],
+  };
+
+  spawnSecurities(level);
+  updateHUD();
+  document.getElementById('gameOverlay').classList.remove('active');
+
+  if (gameLoop) cancelAnimationFrame(gameLoop);
+  G.lastTime = performance.now();
+  gameLoop = requestAnimationFrame(gameStep);
+}
+
+function getBaseSpeed(level) {
+  return Math.min(2.5 + level * 0.3, 4.5); // cells per second... actually pixels per frame
+}
+
+function spawnSecurities(level) {
+  // Start positions for securities (ghost house area)
+  const starts = [
+    {x:9,y:9}, {x:10,y:9}, {x:11,y:9}, {x:10,y:10}
+  ];
+  const count = Math.min(1 + Math.floor(level/2), 4);
+  G.securities = [];
+  for(let i=0;i<count;i++){
+    const s = starts[i%starts.length];
+    G.securities.push({
+      x: s.x * G.cell, y: s.y * G.cell,
+      dir: [1,0], speed: (1.2+level*0.15) * G.cell/10,
+      mode: 'chase', modeTimer: 0,
+      scared: false, scaredTimer: 0,
+      color: ['#e74c3c','#3498db','#2ecc71','#9b59b6'][i%4],
+      startX: s.x, startY: s.y,
+      stepTimer: 0,
+    });
+  }
+}
+
+function gameStep(ts) {
+  if (!G || G.paused) { gameLoop = requestAnimationFrame(gameStep); return; }
+  const dt = Math.min((ts - G.lastTime)/1000, 0.05);
+  G.lastTime = ts;
+
+  update(dt);
+  draw();
+
+  if (!G.gameOver && !G.won) {
+    gameLoop = requestAnimationFrame(gameStep);
+  }
+}
+
+function update(dt) {
+  if (G.player.dead) {
+    G.player.deathTimer -= dt;
+    if (G.player.deathTimer <= 0) {
+      if (G.lives <= 0) { triggerGameOver(); return; }
+      respawnPlayer();
+    }
+    return;
+  }
+
+  G.pelletAnim += dt;
+  if (G.flashTimer > 0) G.flashTimer -= dt;
+  if (G.vomitTimer > 0) G.vomitTimer -= dt;
+
+  updatePlayer(dt);
+  updateSecurities(dt);
+  checkCollisions();
+  checkIjsfontein(dt);
+
+  // Puke mechanic
+  if (G.puking) {
+    G.pukeTimer -= dt;
+    if (G.pukeTimer <= 0) {
+      G.puking = false;
+      G.drunkness = 30; // sobered up a bit
+      G.drunkPhase = G.drunkness >= 50 ? 1 : 0;
+      updateDrunkBar();
+      showToast('🤢 Gekotst! Dimitri voelt zich iets beter...');
+    }
+  }
+
+  // Extra security timer
+  if (G.extraSecurity) {
+    G.extraSecTimer -= dt;
+    if (G.extraSecTimer <= 0) {
+      G.extraSecurity = null;
+      showToast('✅ Extra security weg! +1 ID terug!');
+      gainLife();
+    }
+  }
+}
+
+function updatePlayer(dt) {
+  const p = G.player;
+  const cell = G.cell;
+
+  // Speed modifiers
+  let speed = getBaseSpeed(G.level) * cell * dt * 3.5;
+  if (G.puking) speed *= 0.1;
+  else if (G.drunkPhase >= 1) speed *= 0.75;
+
+  p.mouthTimer += dt;
+  if (p.mouthTimer > 0.2) { p.mouthOpen = !p.mouthOpen; p.mouthTimer = 0; }
+
+  // Try to change direction
+  const nd = G.dirInput;
+  const nx = Math.round(p.x/cell) + nd[0];
+  const ny = Math.round(p.y/cell) + nd[1];
+  if (isWalkable(G.maze, nx, ny)) {
+    // Snap to grid when close
+    if (nd[0] !== 0) { if (Math.abs(p.y - Math.round(p.y/cell)*cell) < speed+1) { p.y = Math.round(p.y/cell)*cell; p.dir = [...nd]; }}
+    else { if (Math.abs(p.x - Math.round(p.x/cell)*cell) < speed+1) { p.x = Math.round(p.x/cell)*cell; p.dir = [...nd]; }}
+  }
+
+  // Inverted controls phase
+  let actualDir = [...p.dir];
+  if (G.drunkPhase >= 2 && !G.puking) {
+    actualDir = [-p.dir[0], -p.dir[1]];
+  }
+
+  // Move
+  const tx = p.x + actualDir[0]*speed;
+  const ty = p.y + actualDir[1]*speed;
+  const tgx = Math.round(tx/cell), tgy = Math.round(ty/cell);
+
+  if (isWalkable(G.maze, tgx, tgy)) {
+    p.x = tx; p.y = ty;
+  } else {
+    // Snap to grid
+    p.x = Math.round(p.x/cell)*cell;
+    p.y = Math.round(p.y/cell)*cell;
+  }
+
+  // Tunnel wrap
+  if (p.x < -cell/2) p.x = (COLS)*cell - cell/2;
+  if (p.x > COLS*cell) p.x = -cell/2;
+
+  // Eat pellet
+  const gx = Math.round(p.x/cell), gy = Math.round(p.y/cell);
+  if (gx>=0&&gx<COLS&&gy>=0&&gy<ROWS) {
+    const cell_v = G.maze[gy][gx];
+    if (cell_v === 1) {
+      G.maze[gy][gx] = 2;
+      G.score += 10;
+      updateHUD();
+      checkWin();
+    } else if (cell_v === 3) {
+      G.maze[gy][gx] = 2;
+      G.score += 50;
+      G.beersEaten++;
+      addDrunkenness(5);
+      updateHUD();
+      showToast(`🍺 Biertje #${G.beersEaten}! ${getDrunkMessage()}`);
+      checkWin();
+    } else if (cell_v === 4) {
+      G.maze[gy][gx] = 2;
+      activateIjsfontein();
+    }
+  }
+}
+
+function addDrunkenness(amount) {
+  G.drunkness = Math.min(100, G.drunkness + amount);
+  // Determine phase
+  if (G.beersEaten >= 20 && G.beersEaten < 25) G.drunkPhase = 1;
+  else if (G.beersEaten >= 25) G.drunkPhase = 2;
+  else G.drunkPhase = 0;
+
+  // Puke at 100
+  if (G.drunkness >= 100 && !G.puking) {
+    G.puking = true;
+    G.pukeTimer = 2;
+    G.vomitTimer = 2;
+    showToast('🤮 Dimitri KOTST! Richting wordt weer normaal!', 3000);
+  }
+  updateDrunkBar();
+}
+
+function getDrunkMessage() {
+  if (G.beersEaten < 5) return 'Nog fris!';
+  if (G.beersEaten < 10) return 'Lekker bezig!';
+  if (G.beersEaten < 15) return 'Beetje tipsy...';
+  if (G.beersEaten < 20) return 'Goed gaan!';
+  if (G.beersEaten < 25) return '🐢 Trager nu!';
+  if (G.beersEaten < 30) return '⬅️ OMGEKEERDE CONTROLS!';
+  return '💀 Bijna kotsen...';
+}
+
+function updateDrunkBar() {
+  const pct = Math.round(G.drunkness);
+  document.getElementById('drunkFill').style.width = pct+'%';
+  document.getElementById('drunkPct').textContent = pct+'%';
+}
+
+function activateIjsfontein() {
+  G.ijsfonteinActive = true;
+  const duration = G.extraSecBaseDuration + (G.level-1);
+  G.extraSecTimer = duration;
+  showToast(`🎆 IJSFONTEIN! Extra security voor ${duration}s... overleef het voor +1 ID!`, 3000);
+  // Spawn extra security
+  G.extraSecurity = {
+    x: 10 * G.cell, y: 11 * G.cell,
+    dir: [0,1], speed: (2.0+G.level*0.2)*G.cell/10,
+    stepTimer: 0, color: '#e74c3c', extra: true,
+  };
+}
+
+function checkIjsfontein(dt) {
+  // handled in extraSec timer
+}
+
+function updateSecurities(dt) {
+  const secs = G.extraSecurity ? [...G.securities, G.extraSecurity] : G.securities;
+  secs.forEach(s => {
+    s.stepTimer -= dt;
+    if (s.stepTimer > 0) return;
+    s.stepTimer = 0.18 - G.level * 0.01;
+
+    // Simple AI: try to move toward player
+    const px = Math.round(G.player.x / G.cell);
+    const py = Math.round(G.player.y / G.cell);
+    const sx = Math.round(s.x / G.cell);
+    const sy = Math.round(s.y / G.cell);
+
+    const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+    // Shuffle with some targeting
+    let best = null, bestDist = Infinity;
+    dirs.forEach(d => {
+      const nx=sx+d[0], ny=sy+d[1];
+      if (!isWalkable(G.maze,nx,ny)) return;
+      // Avoid reversing
+      if (d[0]===-s.dir[0]&&d[1]===-s.dir[1]) return;
+      const dist=(nx-px)**2+(ny-py)**2;
+      if(dist<bestDist){bestDist=dist;best=d;}
+    });
+
+    // Random chance to not follow
+    if (Math.random()<0.25) {
+      const valid=dirs.filter(d=>isWalkable(G.maze,sx+d[0],sy+d[1])&&!(d[0]===-s.dir[0]&&d[1]===-s.dir[1]));
+      if(valid.length) best=valid[Math.floor(Math.random()*valid.length)];
+    }
+
+    if(best){
+      s.dir=best;
+      s.x=sx*G.cell; s.y=sy*G.cell;
+      s.x+=best[0]*G.cell; s.y+=best[1]*G.cell;
+      // Clamp
+      s.x=Math.max(0,Math.min(s.x,(COLS-1)*G.cell));
+      s.y=Math.max(0,Math.min(s.y,(ROWS-1)*G.cell));
+    }
+  });
+}
+
+function checkCollisions() {
+  if (G.player.dead) return;
+  const px = G.player.x, py = G.player.y;
+  const threshold = G.cell * 0.7;
+  const allSecs = G.extraSecurity ? [...G.securities, G.extraSecurity] : G.securities;
+  for(const s of allSecs){
+    const dx=Math.abs(s.x-px), dy=Math.abs(s.y-py);
+    if(dx<threshold&&dy<threshold){
+      hitBySecurity();
+      return;
+    }
+  }
+}
+
+function hitBySecurity() {
+  G.lives--;
+  G.flashTimer = 0.5;
+  updateLivesHUD();
+  showToast(`🚫 Gepakt! ${G.lives} ID-bewijs(zen) over!`, 2000);
+  if (G.lives <= 0) {
+    G.player.dead = true;
+    G.player.deathTimer = 1.5;
+  } else {
+    G.player.dead = true;
+    G.player.deathTimer = 1.0;
+  }
+}
+
+function gainLife() {
+  if (G.lives < 3) {
+    G.lives++;
+    updateLivesHUD();
+    showToast('🪪 +1 ID-bewijs terug!');
+  }
+}
+
+function respawnPlayer() {
+  G.player.dead = false;
+  G.player.x = 10*G.cell; G.player.y = 16*G.cell;
+  G.player.dir = [1,0]; G.dirInput = [1,0];
+  G.drunkness = Math.max(0, G.drunkness - 20);
+  updateDrunkBar();
+}
+
+function triggerGameOver() {
+  G.gameOver = true;
+  saveScore({user: currentUser, score: G.score, level: G.level, beers: G.beersEaten, date: new Date().toLocaleDateString('nl')});
+  document.getElementById('overlayTitle').textContent = '💀 GAME OVER';
+  document.getElementById('overlayTitle').style.color = '#ff3333';
+  document.getElementById('overlaySub').textContent = `Score: ${G.score} | Biertjes: ${G.beersEaten} 🍺 | Level ${G.level}`;
+  document.getElementById('gameOverlay').classList.add('active');
+}
+
+function checkWin() {
+  let remaining = 0;
+  for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++) if(G.maze[y][x]===1||G.maze[y][x]===3) remaining++;
+  if(remaining===0) {
+    G.won = true;
+    saveScore({user: currentUser, score: G.score, level: G.level, beers: G.beersEaten, date: new Date().toLocaleDateString('nl')});
+    document.getElementById('overlayTitle').textContent = '🎉 LEVEL GEWONNEN!';
+    document.getElementById('overlayTitle').style.color = '#FFD700';
+    document.getElementById('overlaySub').textContent = `Score: ${G.score} | Biertjes: 🍺${G.beersEaten} | Ga naar level ${G.level+1}!`;
+    document.getElementById('overlayBtn1').textContent = `Level ${G.level+1}`;
+    document.getElementById('overlayBtn1').onclick = () => startGame(G.level+1);
+    document.getElementById('gameOverlay').classList.add('active');
+  }
+}
+
+function endGame() {
+  if(gameLoop) cancelAnimationFrame(gameLoop);
+  G = {};
+  showScreen('menuScreen');
+}
+
+function updateHUD() {
+  document.getElementById('hudScore').textContent = G.score;
+  document.getElementById('hudLevel').textContent = G.level;
+  document.getElementById('hudBeers').textContent = '🍺'+G.beersEaten;
+  updateDrunkBar();
+  updateLivesHUD();
+}
+
+function updateLivesHUD() {
+  for(let i=0;i<3;i++){
+    document.getElementById('doc'+i).classList.toggle('lost', i >= G.lives);
+  }
+}
+
+// ===== DRAWING =====
+function draw() {
+  if(!ctx) return;
+  const c = G.cell;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // Background
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // Flash overlay on hit
+  if(G.flashTimer > 0) {
+    ctx.fillStyle = `rgba(255,0,0,${G.flashTimer*0.7})`;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+
+  // Vomit overlay
+  if(G.vomitTimer > 0) {
+    ctx.fillStyle = `rgba(100,180,0,${G.vomitTimer*0.5})`;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='rgba(150,220,0,0.3)';
+    for(let i=0;i<20;i++){
+      const x=Math.sin(i*37.3+G.vomitTimer*10)*canvas.width/2+canvas.width/2;
+      const y=Math.cos(i*29.1+G.vomitTimer*8)*canvas.height/2+canvas.height/2;
+      ctx.beginPath(); ctx.arc(x,y,c*0.4,0,Math.PI*2); ctx.fill();
+    }
+    ctx.font=`bold ${c*1.5}px Arial`; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillStyle='rgba(255,255,255,0.9)';
+    ctx.fillText('🤮 KOTSEN! 🤮', canvas.width/2, canvas.height/2);
+  }
+
+  // Maze
+  for(let y=0;y<ROWS;y++){
+    for(let x=0;x<COLS;x++){
+      const v = G.maze[y][x];
+      const px=x*c, py=y*c;
+      if(v===0){
+        // Wall
+        ctx.fillStyle='#1a3a6b';
+        ctx.fillRect(px,py,c,c);
+        ctx.strokeStyle='#2a5a9b'; ctx.lineWidth=1;
+        ctx.strokeRect(px+0.5,py+0.5,c-1,c-1);
+      } else if(v===1){
+        // Dot
+        const pulse=0.7+0.3*Math.sin(G.pelletAnim*4+x+y);
+        ctx.fillStyle=`rgba(255,255,255,${pulse})`;
+        ctx.beginPath(); ctx.arc(px+c/2, py+c/2, c*0.1, 0, Math.PI*2); ctx.fill();
+      } else if(v===3){
+        drawBeer(ctx, px, py, c);
+      } else if(v===4){
+        drawIjsfontein(ctx, px, py, c);
+      }
+    }
+  }
+
+  // Player
+  if(!G.player.dead) {
+    drawDimitri(ctx, G.player.x, G.player.y, c,
+      G.drunkPhase>=2 ? [-G.player.dir[0],-G.player.dir[1]] : G.player.dir,
+      Math.floor(G.drunkness/34), G.player.mouthOpen);
+  }
+
+  // Securities
+  G.securities.forEach(s => {
+    drawSecurity(ctx, s.x, s.y, c, s.scared, false);
+  });
+  if(G.extraSecurity) {
+    drawSecurity(ctx, G.extraSecurity.x, G.extraSecurity.y, c, false, true);
+    // Timer bar
+    const dur = G.extraSecBaseDuration + (G.level-1);
+    const pct = G.extraSecTimer / dur;
+    ctx.fillStyle='rgba(255,0,0,0.6)';
+    ctx.fillRect(G.extraSecurity.x, G.extraSecurity.y-8, c*pct, 5);
+  }
+
+  // Inverted control warning
+  if(G.drunkPhase>=2 && !G.puking) {
+    ctx.save();
+    ctx.font=`bold ${c*0.7}px Arial`; ctx.textAlign='center';
+    ctx.fillStyle=`rgba(255,100,0,${0.5+0.5*Math.sin(G.pelletAnim*8)})`;
+    ctx.fillText('⬅️ OMGEKEERD! ➡️', canvas.width/2, c*1.2);
+    ctx.restore();
+  }
+
+  // Drunk slow warning
+  if(G.drunkPhase===1) {
+    ctx.save();
+    ctx.font=`bold ${c*0.7}px Arial`; ctx.textAlign='center';
+    ctx.fillStyle=`rgba(255,200,0,${0.4+0.4*Math.sin(G.pelletAnim*5)})`;
+    ctx.fillText('🐢 LANGZAMER...', canvas.width/2, c*1.2);
+    ctx.restore();
+  }
+}
+
+// ===== INPUT =====
+function setDir(dx, dy) {
+  if (!G.player) return;
+  G.dirInput = [dx, dy];
+}
+
+document.addEventListener('keydown', e => {
+  const map = {ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1],
+               a:[-1,0],d:[1,0],w:[0,-1],s:[0,1]};
+  const d = map[e.key];
+  if(d) { e.preventDefault(); setDir(d[0],d[1]); }
+  if(e.key==='Enter'&&G.gameOver) startGame(currentLevel);
+  if(e.key==='Escape') { if(gameLoop) cancelAnimationFrame(gameLoop); showScreen('menuScreen'); }
+});
+
+// Touch swipe
+let touchStart = null;
+document.addEventListener('touchstart', e => { touchStart = e.touches[0]; }, {passive:true});
+document.addEventListener('touchend', e => {
+  if(!touchStart) return;
+  const dx=e.changedTouches[0].clientX-touchStart.clientX;
+  const dy=e.changedTouches[0].clientY-touchStart.clientY;
+  if(Math.abs(dx)>Math.abs(dy)){setDir(dx>0?1:-1,0);}else{setDir(0,dy>0?1:-1);}
+  touchStart=null;
+}, {passive:true});
+
+window.addEventListener('resize', () => {
+  if(document.getElementById('gameScreen').classList.contains('active')&&G.cell){
+    initGame(G.level);
+  }
+});
+</script>
+</body>
+</html>
